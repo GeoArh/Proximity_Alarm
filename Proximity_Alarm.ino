@@ -1,4 +1,5 @@
-#include "Arduino.h"
+#include <Arduino.h>
+#include <Ultrasonic.h>
 
 const int button = 2; //Set Pin 2 as button input
 const int buzzer = 9; //Set Pin 9 as buzzer output
@@ -6,6 +7,11 @@ const int freq = 2170; //Set frequency value
 
 bool buttonState = LOW; //Current button state
 bool lastButtonState = LOW; //Last button state
+
+int distance = 0; //Variable used by the ultrasonic sensor to store the distance
+
+//Define pins ultrasonic(trig,echo)
+Ultrasonic ultrasonic(53,52);
 
 void setup()
 {   
@@ -22,9 +28,23 @@ void actuateBuzzer()
     tone(buzzer, freq, 300); //Set output active
 }
 
-void loop()
+void DetectDistance()
 {
-    buttonState = digitalRead(button); //Read button state
+  distance = ultrasonic.read(); //Use 'CM' for centimeters or 'INC' for inches
+  if(distance < 200) //Check if the distance is less than 200cm
+  {
+    actuateBuzzer(); //Activate buzzer
+  }
+  //every 1sec. 
+  delay(500);
+}
+
+void loop()
+{   /* Function to be redisigned for On/Off functionality */
+
+    buttonState = digitalRead(button); //Read button state 
+
+    DetectDistance();
 
     if (buttonState == HIGH && lastButtonState == LOW) //Check if button is pressed
     {
